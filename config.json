@@ -1,0 +1,21 @@
+{
+  "START_DATE": "2018-01-01",
+  "END_DATE": "2019-01-01",
+  "RES": 10,
+  "GRID_SIZE": 5120,
+  "COUNTRY_NAME": "Europe",
+  "INCREMENT": "year",
+  "INTERVAL": 1,
+  "ASSET_FOLDER": "projects/ee-gmkovacs/assets/",
+  "OUTPUT_DIR": "images/",
+  "NO_DATA_VALUE": -32768,
+  "SOUTH": false,
+  "MAX_RETRIES": 5,
+  "BASE_WAIT": 2.0,
+  "GRID_ASSET": "projects/ee-gmkovacs/assets/europe_wetland_grid_5120m_epsg3035",
+  "CHUNKS": {
+    "bands_01_22": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+    "bands_23_44": [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44],
+    "bands_45_63": [45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63]
+  }
+}

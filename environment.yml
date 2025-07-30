@@ -1,0 +1,16 @@
+name: gee_data_download
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - earthengine-api
+  - numpy
+  - requests
+  - matplotlib
+  - rasterio
+  - tqdm
+  - pyproj
+  - pip
+  - pip:
+      - google-api-python-client
