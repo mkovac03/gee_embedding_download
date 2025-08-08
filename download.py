@@ -67,7 +67,7 @@ except ee.EEException:
     ee.Initialize()
 
 # ========== Get Embedding Image with Label ==========
-def get_embedding_image(feature, epsg, band_list):
+def get_embedding_image(feature, epsg, band_list, include_label=True):
     geometry = feature.geometry()
 
     collection = ee.ImageCollection("GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL") \
@@ -77,12 +77,15 @@ def get_embedding_image(feature, epsg, band_list):
         .clip(geometry) \
         .multiply(10000).toInt16()
 
-    label = ee.Image("projects/ee-gmkovacs/assets/ext_wetland_2018_v2021_nw") \
-        .clip(geometry) \
-        .select([0], ['wetland_label']) \
-        .toInt16()
+    if include_label:
+        label = ee.Image("projects/ee-gmkovacs/assets/ext_wetland_2018_v2021_nw") \
+            .clip(geometry) \
+            .select([0], ['wetland_label']) \
+            .toInt16()
+        return label.addBands(embedding), epsg
+    else:
+        return embedding, epsg
 
-    return label.addBands(embedding), epsg
 
 # ========== Download Function ==========
 def check_and_download(params):
@@ -107,7 +110,9 @@ def check_and_download(params):
 
     try:
         feature = feat.transform(f"EPSG:{epsg}", 0.001)
-        img, epsg = get_embedding_image(feature, epsg, band_list)
+        include_label = chunk_name == "bands_00_21"
+        img, epsg = get_embedding_image(feature, epsg, band_list, include_label=include_label)
+
     except Exception as e:
         logging.error(f"[{i}] Failed to get embedding image: {e}")
         return None
@@ -126,9 +131,13 @@ def check_and_download(params):
                 f.write(r.content)
 
             with rasterio.open(outp, 'r+') as dst:
-                dst.set_band_description(1, "wetland_label")
-                for bi in range(2, dst.count + 1):
-                    dst.set_band_description(bi, f"embedding_{bi-2}")
+                if chunk_name == "bands_00_21":
+                    dst.set_band_description(1, "wetland_label")
+                    for band_idx, original_index in enumerate(band_list, start=2):
+                        dst.set_band_description(band_idx, f"embedding_{int(original_index[1:])}")
+                else:
+                    for band_idx, original_index in enumerate(band_list, start=1):
+                        dst.set_band_description(band_idx, f"embedding_{int(original_index[1:])}")
 
             if i == 0:
                 with open(os.path.join(out_dir, "bands_used.txt"), "w") as f:
